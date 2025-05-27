@@ -1,27 +1,28 @@
 const { Pinecone } = require('@pinecone-database/pinecone');
 
-const pinecone = new Pinecone();
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY,
+});
 
-async function initPinecone() {
-  await pinecone.init({
-    apiKey: process.env.PINECONE_API_KEY,
-    environment: process.env.PINECONE_ENVIRONMENT,
-  });
+const index = pinecone.index(process.env.PINECONE_INDEX);
+const namespace = process.env.PINECONE_NAMESPACE || 'default';
 
-  return pinecone.Index(process.env.PINECONE_INDEX);
-}
-
-async function upsertVector(id, vector) {
-  const index = await initPinecone();
-  await index.upsert([{ id, values: vector }]);
+async function upsertVector(id, vector, metadata = {}) {
+  await index.upsert([
+    {
+      id,
+      values: vector,
+      metadata,
+    },
+  ], namespace);
 }
 
 async function queryVector(vector) {
-  const index = await initPinecone();
   const result = await index.query({
     vector,
     topK: 1,
-    includeMetadata: true
+    includeMetadata: true,
+    namespace,
   });
 
   return result.matches?.[0];
