@@ -1,5 +1,6 @@
 const { Pinecone } = require('@pinecone-database/pinecone');
 
+// Instancia o cliente Pinecone com a nova API
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
 });
@@ -7,6 +8,7 @@ const pinecone = new Pinecone({
 const index = pinecone.index(process.env.PINECONE_INDEX);
 const namespace = process.env.PINECONE_NAMESPACE || 'default';
 
+// Insere ou atualiza um vetor no índice
 async function upsertVector(id, vector, metadata = {}) {
   await index.upsert([
     {
@@ -17,6 +19,7 @@ async function upsertVector(id, vector, metadata = {}) {
   ], namespace);
 }
 
+// Consulta o vetor mais similar
 async function queryVector(vector) {
   const result = await index.query({
     vector,
