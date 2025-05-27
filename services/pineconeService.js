@@ -18,7 +18,12 @@ async function upsertVector(id, vector) {
 
 async function queryVector(vector) {
   const index = await initPinecone();
-  const result = await index.query({ vector, topK: 1, includeMetadata: true });
+  const result = await index.query({
+    vector,
+    topK: 1,
+    includeMetadata: true
+  });
+
   return result.matches?.[0];
 }
 
